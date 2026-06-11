@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Google Docs Pro & PDF Exporter 🚀</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap');
+
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Rajdhani', sans-serif;
+}
+
+body {
+background: #060a17;
+color: white;
+padding: 20px;
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+overflow-x: hidden;
+}
+
+.main-container {
+width: 100%;
+max-width: 750px;
+background: #0d1527;
+border: 2px solid #00ffff;
+border-radius: 24px;
+padding: 25px;
+box-shadow: 0 0 25px #00ffff44;
+position: relative;
+}
+
+/* Header Setup */
+.header-area {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+padding-bottom: 15px;
+border-bottom: 1px solid #00ffff22;
+}
+
+.title {
+font-family: 'Orbitron', sans-serif;
+font-size: 24px;
+color: #00ffff;
+text-shadow: 0 0 15px #00ffff;
+font-weight: bold;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.action-buttons {
+display: flex;
+gap: 10px;
+}
+
+.nav-btn {
+background: linear-gradient(135deg, #ffaa00, #ff6600);
+color: black;
+font-family: 'Orbitron', sans-serif;
+font-weight: bold;
+padding: 10px 16px;
+border-radius: 12px;
+border: none;
+cursor: pointer;
+box-shadow: 0 0 15px #ffaa0055;
+transition: 0.3s;
+text-decoration: none;
+font-size: 13px;
+display: flex;
+align-items: center;
+}
+
+/* Premium PDF Button Style */
+.pdf-btn {
+background: linear-gradient(135deg, #00ff88, #00b359);
+color: black;
+font-family: 'Orbitron', sans-serif;
+font-weight: bold;
+padding: 10px 18px;
+border-radius: 12px;
+border: none;
+cursor: pointer;
+box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+transition: 0.3s;
+font-size: 13px;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.nav-btn:hover, .pdf-btn:hover {
+transform: translateY(-2px);
+filter: brightness(1.1);
+}
+
+/* UI Card Boxes Style */
+.ui-card-box {
+background: #0d1527;
+border: 2px solid #00ffff;
+border-radius: 20px;
+padding: 15px;
+margin-bottom: 20px;
+box-shadow: 0 0 15px #00ffff22;
+}
+
+.box-title {
+font-size: 18px;
+color: #00ffff;
+font-weight: bold;
+margin-bottom: 12px;
+letter-spacing: 0.5px;
+}
+
+/* Toolbar Buttons */
+.doc-toolbar {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+align-items: center;
+}
+
+.btn-tool {
+background: #00ffff;
+color: #000000;
+border: none;
+padding: 8px 14px;
+font-size: 14px;
+font-weight: bold;
+border-radius: 8px;
+cursor: pointer;
+transition: 0.2s;
+box-shadow: 0 0 10px #00ffff55;
+}
+
+.btn-tool:hover {
+background: #ffffff;
+box-shadow: 0 0 15px #ffffff;
+transform: scale(1.05);
+}
+
+select {
+background: #1f2937;
+color: white;
+border: 1px solid #00ffff44;
+padding: 7px 10px;
+border-radius: 8px;
+outline: none;
+cursor: pointer;
+font-weight: bold;
+font-size: 14px;
+}
+
+/* Editor Container */
+.google-doc-page {
+width: 100%;
+min-height: 380px;
+max-height: 600px;
+background: #1f2937;
+border: 1px solid #374151;
+border-radius: 12px;
+padding: 25px;
+font-size: 18px;
+line-height: 1.6;
+color: #ffffff; 
+outline: none;
+overflow-y: auto;
+}
+
+/* Emoji Bar */
+.emoji-bar {
+display: flex;
+gap: 10px;
+overflow-x: auto;
+padding: 5px 0;
+}
+
+.emoji-btn {
+font-size: 22px;
+background: none;
+border: none;
+cursor: pointer;
+transition: 0.2s;
+}
+
+.emoji-btn:hover {
+transform: scale(1.3);
+}
+
+/* Reset Button */
+.resetBtn {
+width: 100%;
+padding: 14px;
+background: #ff3333;
+color: white;
+font-family: 'Rajdhani', sans-serif;
+font-size: 18px;
+font-weight: bold;
+border-radius: 12px;
+border: none;
+cursor: pointer;
+transition: 0.3s;
+box-shadow: 0 0 15px rgba(255, 51, 51, 0.3);
+}
+
+.resetBtn:hover {
+background: #ff1111;
+box-shadow: 0 0 25px #ff3333aa;
+}
+
+.status-footer {
+text-align: center;
+margin-top: 15px;
+font-size: 14px;
+color: #a0aec0;
+font-weight: 500;
+}
+
+/* Draggable Pop-up 1.html Window System */
+.calc-window {
+position: fixed;
+top: 15%;
+left: 30%;
+width: 360px;
+height: 480px;
+background: #0d1527;
+border: 2px solid #ffaa00;
+border-radius: 16px;
+box-shadow: 0 0 30px rgba(255, 170, 0, 0.4);
+z-index: 9999;
+display: none;
+flex-direction: column;
+overflow: hidden;
+}
+
+.window-header {
+background: #111827;
+padding: 10px 15px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+cursor: move;
+border-bottom: 2px solid #ffaa0033;
+user-select: none;
+}
+
+.window-title {
+font-family: 'Orbitron', sans-serif;
+font-size: 14px;
+color: #ffaa00;
+font-weight: bold;
+}
+
+.window-controls {
+display: flex;
+gap: 8px;
+}
+
+.win-btn {
+width: 26px;
+height: 26px;
+border-radius: 50%;
+border: none;
+font-weight: bold;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 12px;
+}
+
+.btn-min { background: #ffcc00; color: #000; }
+.btn-max { background: #00ff88; color: #000; }
+.btn-close { background: #ff3333; color: #fff; }
+
+.window-body {
+flex: 1;
+width: 100%;
+height: 100%;
+background: #1f2937;
+}
+
+.window-body iframe {
+width: 100%;
+height: 100%;
+border: none;
+}
+
+.window-resizer {
+width: 15px;
+height: 15px;
+background: #ffaa0055;
+position: absolute;
+right: 0;
+bottom: 0;
+cursor: se-resize;
+}
+
+/* =======================================================
+   AI-POWERED PRESTIGE PRINT LAYOUT FOR PERFECT PDF DOWNLOAD
+   ======================================================= */
+@media print {
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .main-container, .calc-window, .ui-card-box, .resetBtn, .status-footer {
+        display: none !important; /* Hides all UI tools completely on print */
+    }
+    /* Shows only the clean text workspace with absolute AI professional styling */
+    #print-pdf-wrapper {
+        display: block !important;
+        width: 100% !important;
+        padding: 25mm 20mm !important;
+        background: #ffffff !important;
+        color: #111111 !important;
+    }
+    .print-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-bottom: 2px solid #00ffff !important;
+        padding-bottom: 15px !important;
+        margin-bottom: 30px !important;
+    }
+    .print-logo {
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: 20pt !important;
+        color: #00a3a3 !important;
+        font-weight: bold !important;
+    }
+    .print-meta {
+        font-size: 10pt !important;
+        color: #666666 !important;
+        text-align: right !important;
+        line-height: 1.4 !important;
+    }
+    .print-content {
+        font-size: 12pt !important;
+        line-height: 1.8 !important;
+        color: #222222 !important;
+    }
+    .print-content h1, .print-content h2, .print-content h3 {
+        color: #007373 !important;
+        margin-top: 20px !important;
+        margin-bottom: 10px !important;
+    }
+}
+
+#print-pdf-wrapper {
+    display: none;
+}
+</style>
+</head>
+<body>
+
+<div class="main-container">
+
+<div class="header-area">
+<div class="title">📄 DOCS PRO</div>
+<div class="action-buttons">
+    <button class="pdf-btn" onclick="downloadSmartPDF()">📥 Download PDF (AI Style)</button>
+    <button class="nav-btn" onclick="openCalcWindow()">⚡ 1.html (Calc)</button>
+</div>
+</div>
+
+<div class="ui-card-box">
+<div class="box-title">Document Tools</div>
+<div class="doc-toolbar">
+<button class="btn-tool" onclick="execCmd('bold')">B</button>
+<button class="btn-tool" onclick="execCmd('italic')">I</button>
+<button class="btn-tool" onclick="execCmd('underline')">U</button>
+<button class="btn-tool" onclick="execCmd('justifyLeft')">Left</button>
+<button class="btn-tool" onclick="execCmd('justifyCenter')">Center</button>
+<button class="btn-tool" onclick="execCmd('justifyRight')">Right</button>
+
+<select onchange="execCmd('foreColor', this.value); this.selectedIndex=0;">
+<option value="" hidden>🎨 Text Color</option>
+<option value="#00ffff">Cyan Neon</option>
+<option value="#00ff88">Matrix Green</option>
+<option value="#ff00ff">Cyber Pink</option>
+<option value="#ffff00">Laser Yellow</option>
+<option value="#ff3333">Flame Red</option>
+<option value="#ffffff">Pure White</option>
+</select>
+
+<select onchange="execCmd('fontSize', this.value); this.selectedIndex=0;">
+<option value="" hidden>📏 Size</option>
+<option value="3">Small</option>
+<option value="4">Normal</option>
+<option value="5">Large</option>
+<option value="6">Heading 1</option>
+<option value="7">Ultra Big</option>
+</select>
+</div>
+</div>
+
+<div class="ui-card-box">
+<div class="box-title">Document Workspace</div>
+<div 
+id="docEditor" 
+class="google-doc-page" 
+contenteditable="true" 
+oninput="saveDocData()"></div>
+</div>
+
+<div class="ui-card-box">
+<div class="box-title">Trending Emojis</div>
+<div class="emoji-bar">
+<button class="emoji-btn" onclick="insertEmoji('💰')">💰</button>
+<button class="emoji-btn" onclick="insertEmoji('🔥')">🔥</button>
+<button class="emoji-btn" onclick="insertEmoji('👑')">👑</button>
+<button class="emoji-btn" onclick="insertEmoji('🎮')">🎮</button>
+<button class="emoji-btn" onclick="insertEmoji('🚀')">🚀</button>
+<button class="emoji-btn" onclick="insertEmoji('💎')">💎</button>
+<button class="emoji-btn" onclick="insertEmoji('✨')">✨</button>
+<button class="emoji-btn" onclick="insertEmoji('⚠️')">⚠️</button>
+</div>
+</div>
+
+<button class="resetBtn" onclick="hardResetDoc()">Reset All Data</button>
+
+<div class="status-footer">
+✓ Data Automatically Saved
+</div>
+
+</div>
+
+<div id="print-pdf-wrapper">
+    <div class="print-header">
+        <div class="print-logo">💎 Bill Tracker PRO DOC</div>
+        <div class="print-meta">
+            <strong>Exported:</strong> <span id="pdf-date"></span><br>
+            <strong>Status:</strong> Verified Premium Document
+        </div>
+    </div>
+    <div id="print-pdf-content" class="print-content"></div>
+</div>
+
+<div id="calcWindow" class="calc-window">
+    <div id="calcWindowHeader" class="window-header">
+        <div class="window-title">⚡ 1.html - Calculator</div>
+        <div class="window-controls">
+            <button class="win-btn btn-min" onclick="minimizeWindow()">─</button>
+            <button class="win-btn btn-max" onclick="maximizeWindow()">🗖</button>
+            <button class="win-btn btn-close" onclick="closeCalcWindow()">✕</button>
+        </div>
+    </div>
+    <div class="window-body">
+        <iframe src="1.html"></iframe>
+        <div id="windowResizer" class="window-resizer"></div>
+    </div>
+</div>
+
+<script>
+const editor = document.getElementById("docEditor");
+const savedDocText = localStorage.getItem("googleDocNeonText_v5");
+
+if (savedDocText) {
+    editor.innerHTML = savedDocText;
+} else {
+    editor.innerHTML = `Type here... ✨`;
+}
+
+function execCmd(command, value = null) {
+    document.execCommand(command, false, value);
+    saveDocData();
+}
+
+function saveDocData() {
+    localStorage.setItem("googleDocNeonText_v5", editor.innerHTML);
+}
+
+function insertEmoji(emoji) {
+    editor.focus();
+    document.execCommand('insertText', false, emoji);
+    saveDocData();
+}
+
+function hardResetDoc() {
+    let confirmAction = confirm("Are you sure you want to completely erase all text data?");
+    if (confirmAction) {
+        localStorage.removeItem("googleDocNeonText_v5");
+        editor.innerHTML = "";
+        alert("All document workspace data cleared successfully!");
+    }
+}
+
+// PREMIUM AUTOMATED AI PDF EXPORTER SYSTEM
+function downloadSmartPDF() {
+    const content = editor.innerHTML;
+    const printContentArea = document.getElementById("print-pdf-content");
+    const printDate = document.getElementById("pdf-date");
+    
+    // Set dynamic metadata fields
+    const now = new Date();
+    printDate.innerText = now.toLocaleDateString() + " | " + now.toLocaleTimeString();
+    
+    // Inject and structure the user content into premium print block
+    printContentArea.innerHTML = content;
+    
+    // Smooth print trigger which formats as PDF flawlessly on any platform
+    window.print();
+}
+
+// WINDOW WINDOW MANAGER
+const win = document.getElementById("calcWindow");
+const winHeader = document.getElementById("calcWindowHeader");
+const winResizer = document.getElementById("windowResizer");
+
+let isMaximized = false;
+let originalWidth = 360, originalHeight = 480;
+let originalTop = "15%", originalLeft = "30%";
+
+function openCalcWindow() { win.style.display = "flex"; }
+function closeCalcWindow() { win.style.display = "none"; }
+
+function minimizeWindow() {
+    if(win.style.height === "45px") {
+        win.style.height = isMaximized ? "100vh" : originalHeight + "px";
+    } else {
+        if(!isMaximized) originalHeight = win.offsetHeight;
+        win.style.height = "45px";
+    }
+}
+
+function maximizeWindow() {
+    if (!isMaximized) {
+        originalWidth = win.offsetWidth;
+        originalHeight = win.offsetHeight;
+        originalTop = win.style.top;
+        originalLeft = win.style.left;
+        win.style.width = "100vw"; win.style.height = "100vh";
+        win.style.top = "0px"; win.style.left = "0px";
+        isMaximized = true;
+    } else {
+        win.style.width = originalWidth + "px"; win.style.height = originalHeight + "px";
+        win.style.top = originalTop; win.style.left = originalLeft;
+        isMaximized = false;
+    }
+}
+
+// Draggable Logic Engine
+dragElement(win);
+function dragElement(elmnt) {
+  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (winHeader) winHeader.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
+    if(isMaximized) return;
+    e = e || window.event; e.preventDefault();
+    pos3 = e.clientX; pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+  }
+  function elementDrag(e) {
+    e = e || window.event; e.preventDefault();
+    pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+    pos3 = e.clientX; pos4 = e.clientY;
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+  function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
+}
+
+// Resizer Logic Engine
+winResizer.addEventListener('mousedown', initResize, false);
+function initResize(e) { if(isMaximized) return; window.addEventListener('mousemove', StartResize, false); window.addEventListener('mouseup', StopResize, false); }
+function StartResize(e) { win.style.width = (e.clientX - win.offsetLeft) + 'px'; win.style.height = (e.clientY - win.offsetTop) + 'px'; }
+function StopResize(e) { window.removeEventListener('mousemove', StartResize, false); window.removeEventListener('mouseup', StopResize, false); }
+</script>
+
+</body>
+</html>
