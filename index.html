@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bill Tracker Pro</title>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <style>
 
 *{
@@ -234,6 +236,16 @@ color:black;
 box-shadow:0 0 20px #00ffff;
 }
 
+.pdfBtn {
+background: #00ff88;
+color: #0a0f1f;
+margin-top: 15px;
+}
+
+.pdfBtn:hover {
+box-shadow: 0 0 20px #00ff88;
+}
+
 .resetBtn{
 background:#ff3333;
 color:white;
@@ -325,7 +337,7 @@ display: none;
 
 <div class="card">
 <h2>Monthly Salary</h2>
-<input type="number" id="salary" placeholder="Enter Salary">
+<input type="number" id="salary" placeholder="Enter Salary" oninput="liveUpdateSalary()">
 <button class="addBtn" onclick="saveSalary()">Save Salary</button>
 </div>
 
@@ -345,6 +357,7 @@ display: none;
 <div class="summary">Total Expenses : <span class="red" id="totalExpense">Rs.0</span></div>
 <br>
 <div class="summary">Remaining Balance : <span class="green" id="remaining">Rs.0</span></div>
+<button class="pdfBtn" onclick="generatePDF()">📥 Download Statement PDF</button>
 <button class="resetBtn" onclick="resetData()">Reset All Data</button>
 </div>
 
@@ -397,8 +410,14 @@ if (localStorage.getItem("trackedLogo")) {
 displayLogo(localStorage.getItem("trackedLogo"));
 }
 
+function liveUpdateSalary(){
+salary = Number(document.getElementById("salary").value) || 0;
+localStorage.setItem("salary", salary);
+updateUI();
+}
+
 function saveSalary(){
-salary = Number(document.getElementById("salary").value);
+salary = Number(document.getElementById("salary").value) || 0;
 localStorage.setItem("salary", salary);
 updateUI();
 alert("Salary saved successfully.");
@@ -469,8 +488,105 @@ Rs.${item.amount.toLocaleString()}
 `;
 });
 
+let currentSalary = Number(document.getElementById("salary").value) || salary;
+
 document.getElementById("totalExpense").innerText = "Rs." + total.toLocaleString();
-document.getElementById("remaining").innerText = "Rs." + (salary-total).toLocaleString();
+document.getElementById("remaining").innerText = "Rs." + (currentSalary - total).toLocaleString();
+}
+
+// Premium Dark style PDF generator
+function generatePDF() {
+let currentSalary = Number(document.getElementById("salary").value) || salary;
+
+if (expenses.length === 0 && currentSalary === 0) {
+alert("No data available to download!");
+return;
+}
+
+let totalExpense = 0;
+expenses.forEach(item => totalExpense += Number(item.amount));
+let remainingBalance = currentSalary - totalExpense;
+
+let expensePercentage = currentSalary > 0 ? ((totalExpense / currentSalary) * 100).toFixed(1) : "0.0";
+
+let expenseRows = "";
+expenses.forEach((item, index) => {
+let itemAmount = Number(item.amount);
+let itemPercentage = currentSalary > 0 ? ((itemAmount / currentSalary) * 100).toFixed(1) : "0.0";
+expenseRows += `
+<tr style="border-bottom: 1px solid #1f2937;">
+<td style="padding: 15px; color: #a1a1aa; font-size: 14px; text-align: left;">${index + 1}</td>
+<td style="padding: 15px; color: white; font-weight: 600; font-size: 15px; text-align: left;">${item.name}</td>
+<td style="padding: 15px; color: #ff4444; font-weight: bold; font-size: 15px; text-align: right;">Rs. ${itemAmount.toLocaleString()}</td>
+<td style="padding: 15px; color: #00ffff; font-size: 13px; text-align: right; font-weight: 500;">${itemPercentage}%</td>
+</tr>
+`;
+});
+
+let logoSrc = localStorage.getItem("trackedLogo") || "";
+let logoHtml = logoSrc ? `<img src="${logoSrc}" style="width: 55px; height: 55px; object-fit: cover; border-radius: 12px; border: 2px solid #00ffff;">` : `<div style="font-weight:bold; color:#00ffff; font-size:18px; text-shadow: 0 0 5px #00ffff;">💰 BILL TRACKER PRO</div>`;
+
+const element = document.createElement('div');
+element.innerHTML = `
+<div style="padding: 40px; font-family: 'Segoe UI', Arial, sans-serif; background: #0a0f1f; color: white; min-height: 842px; box-sizing: border-box;">
+<table style="width: 100%; margin-bottom: 35px; border-collapse: collapse;">
+<tr>
+<td>${logoHtml}</td>
+<td style="text-align: right;">
+<h1 style="margin: 0; color: #00ffff; font-size: 26px; text-shadow: 0 0 10px rgba(0,255,255,0.3); font-weight: 800; letter-spacing: 0.5px;">Financial Statement</h1>
+<p style="margin: 6px 0 0 0; color: #94a3b8; font-size: 13px;">Statement Date: ${new Date().toLocaleDateString()}</p>
+</td>
+</tr>
+</table>
+
+<div style="display: flex; gap: 15px; margin-bottom: 35px;">
+<div style="flex: 1; background: #111827; border: 2px solid #00ffff; padding: 18px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,255,255,0.1);">
+<span style="font-size: 11px; color: #00ffff; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Monthly Salary</span>
+<h3 style="margin: 8px 0 0 0; color: white; font-size: 22px; font-weight: 700;">Rs. ${currentSalary.toLocaleString()}</h3>
+</div>
+<div style="flex: 1; background: #111827; border: 1px solid #ff4444; padding: 18px; border-radius: 16px;">
+<span style="font-size: 11px; color: #ff4444; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Total Spent (${expensePercentage}%)</span>
+<h3 style="margin: 8px 0 0 0; color: #ff4444; font-size: 22px; font-weight: 700;">Rs. ${totalExpense.toLocaleString()}</h3>
+</div>
+<div style="flex: 1; background: #111827; border: 1px solid #00ff88; padding: 18px; border-radius: 16px;">
+<span style="font-size: 11px; color: #00ff88; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Net Remaining</span>
+<h3 style="margin: 8px 0 0 0; color: #00ff88; font-size: 22px; font-weight: 700;">Rs. ${remainingBalance.toLocaleString()}</h3>
+</div>
+</div>
+
+<h3 style="margin-bottom: 20px; color: #00ffff; font-size: 18px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #1f2937; letter-spacing: 0.5px;">
+📊 Itemized Expense Analysis
+</h3>
+
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+<thead>
+<tr style="background: #111827; color: #00ffff; text-align: left; border: 1px solid #00ffff33;">
+<th style="padding: 14px; border-top-left-radius: 12px; border-bottom-left-radius: 12px; font-size: 13px; font-weight: bold; text-transform: uppercase; text-align: left;">#</th>
+<th style="padding: 14px; font-size: 13px; font-weight: bold; text-transform: uppercase; text-align: left;">Expense Category / Name</th>
+<th style="padding: 14px; text-align: right; font-size: 13px; font-weight: bold; text-transform: uppercase;">Amount Paid</th>
+<th style="padding: 14px; text-align: right; border-top-right-radius: 12px; border-bottom-right-radius: 12px; font-size: 13px; font-weight: bold; text-transform: uppercase;">% of Income</th>
+</tr>
+</thead>
+<tbody>
+${expenseRows}
+</tbody>
+</table>
+
+<div style="text-align: center; margin-top: 80px; padding-top: 20px; border-top: 1px solid #1f2937; color: #64748b; font-size: 12px; letter-spacing: 0.5px;">
+Generated securely by <strong>Bill Tracker Pro</strong>. Manage your wealth efficiently.
+</div>
+</div>
+`;
+
+const options = {
+margin: 8,
+filename: 'Bill_Tracker_Statement.pdf',
+image: { type: 'jpeg', quality: 0.98 },
+html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0a0f1f' },
+jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+};
+
+html2pdf().from(element).set(options).save();
 }
 
 updateUI();
